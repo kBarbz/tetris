@@ -1,37 +1,22 @@
-# Example file showing a circle moving on screen
 import pygame
-
-
-class BlockSprite(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()  # Call the constructor of the parent class
-        self.image = pygame.image.load('assets/images/blocks/t_block.webp')  # Set the image of the sprite
-        self.rect = self.image.get_rect()  # Get the rectangular shape of the sprite
-
-    def get_mask(self):
-        return pygame.mask.from_surface(self.image)
-
-    def rotate_right(self):
-        # Rotate the sprite by 90 degrees
-        self.image = pygame.transform.rotate(self.image, -90)
-        self.rect = self.image.get_rect(center=self.rect.center)
-
+import tetris
+from board import Board
+from utils import Colours
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+board = Board()
 clock = pygame.time.Clock()
 running = True
 dt = 0
 
-player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
+tetromino = tetris.generate_tetromino(board)
 
-block_sprite = BlockSprite()
-all_sprites = pygame.sprite.Group()
-all_sprites.add(block_sprite)
+move_delay = 20
+move_speed = 1
+delay_counter = move_delay
 
-# Set the initial movement speed
-move_speed = 5
+font = pygame.font.Font(None, 36)
 
 while running:
     # poll for events
@@ -40,35 +25,31 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:  # Rotate the sprite when 'R' is pressed
-                block_sprite.rotate_right()
+            if event.key == pygame.K_LEFT and tetromino.can_go_left():
+                tetromino.move(-move_speed, 0)
+            elif event.key == pygame.K_RIGHT and tetromino.can_go_right(board):
+                tetromino.move(move_speed, 0)
+            elif event.key == pygame.K_UP:  # Rotate the sprite when 'R' is pressed
+                tetromino.rotate(board)
 
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill("black")
+    delay_counter -= move_speed
+    if delay_counter <= move_speed:
+        tetromino.move(0, 1)
+        if tetromino.is_at_bottom(board):
+            tetromino = tetris.generate_tetromino(board) # Wrap to the top
+        delay_counter = move_delay
 
-    # Check for key presses to move the sprite
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        block_sprite.rect.x -= move_speed
-    if keys[pygame.K_RIGHT]:
-        block_sprite.rect.x += move_speed
+    # DEBUGGER
+    text = font.render(f"x:{tetromino.x} | y:{tetromino.y}", True, Colours.WHITE.value)
+    text_rect = text.get_rect()
+    text_rect.center = (100, 100)
 
-    block_sprite.rect.y += move_speed
+    board.draw()
+    tetromino.draw(board.screen)
+    board.draw_grid()
+    board.screen.blit(text, text_rect)
+    board.update()
 
-    block_mask = block_sprite.get_mask()
-    if block_sprite.rect.y > screen.get_height() - block_mask.get_size()[1]:
-        block_sprite.rect.y = 0  # Wrap to the top
-
-    # Update and draw all sprites in the group
-    all_sprites.update()
-    all_sprites.draw(screen)
-
-    # flip() the display to put your work on screen
-    pygame.display.flip()
-
-    # limits FPS to 60
-    # dt is delta time in seconds since last frame, used for framerate-
-    # independent physics.
-    dt = clock.tick(60) / 1000
+    clock.tick(60)
 
 pygame.quit()
