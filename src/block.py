@@ -1,13 +1,13 @@
 import pygame
-from utils import Dimensions
+from utils import Dimensions, Colours
 
 
 class Tetromino:
-    def __init__(self, shape, color, grid):
+    def __init__(self, shape, color, x, y):
         self.shape = shape
         self.color = color
-        self.x = grid.width // 2 - len(shape[0]) // 2
-        self.y = 0
+        self.x = x
+        self.y = y
 
     def move(self, dx, dy):
         self.x += dx
@@ -53,3 +53,69 @@ class Tetromino:
                     if self.x + col + 1 > grid.width:
                         return True
         return False
+
+    @staticmethod
+    def get_spawn_point(board):
+        midpoint = board.width // 2
+        return midpoint - 2, 0
+
+
+class TTetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[0, 1, 0], [1, 1, 1]]
+        color = Colours.PURPLE.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)
+
+
+class ITetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[1, 1, 1, 1]]
+        color = Colours.LIGHT_BLUE.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)
+
+
+class JTetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[1, 0, 0], [1, 1, 1]]
+        color = Colours.DARK_BLUE.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)
+
+
+class LTetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[0, 0, 1], [1, 1, 1]]
+        color = Colours.ORANGE.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)
+
+
+class OTetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[1, 1], [1, 1]]
+        color = Colours.YELLOW.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)
+
+    @staticmethod
+    def get_spawn_point(board):
+        midpoint = board.width // 2
+        return midpoint - 1, 0
+
+
+class STetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[0, 1, 1], [1, 1, 0]]
+        color = Colours.GREEN.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)
+
+
+class ZTetromino(Tetromino):
+    def __init__(self, board):
+        shape = [[1, 1, 0], [0, 1, 1]]
+        color = Colours.RED.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(shape, color, x, y)

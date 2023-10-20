@@ -1,8 +1,11 @@
 import block
 import random
-from utils import TetrominoShapes
 
 
-def generate_tetromino(board):
-    block_values = random.choice(list(TetrominoShapes)).value
-    return block.Tetromino(block_values['shape'], block_values['color'].value, board)
+class TetrisGame():
+    def __init__(self, board):
+        self.board = board
+
+    def generate_tetromino(self):
+        block_class = random.choice(block.Tetromino.__subclasses__())
+        return block.ZTetromino(self.board)

@@ -1,5 +1,5 @@
 import pygame
-import tetris
+from tetris import TetrisGame
 from board import Board
 from utils import Colours
 
@@ -10,7 +10,8 @@ clock = pygame.time.Clock()
 running = True
 dt = 0
 
-tetromino = tetris.generate_tetromino(board)
+tetris_game = TetrisGame(board)
+tetromino = tetris_game.generate_tetromino()
 
 move_delay = 20
 move_speed = 1
@@ -36,7 +37,7 @@ while running:
     if delay_counter <= move_speed:
         tetromino.move(0, 1)
         if tetromino.is_at_bottom(board):
-            tetromino = tetris.generate_tetromino(board) # Wrap to the top
+            tetromino = tetris_game.generate_tetromino() # Wrap to the top
         delay_counter = move_delay
 
     # DEBUGGER

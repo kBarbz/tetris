@@ -17,34 +17,3 @@ class Colours(Enum):
     ORANGE = (255, 140, 0)
     GREEN = (0, 128, 0)
     PURPLE = (230, 230, 250)
-
-
-class TetrominoShapes(Enum):
-    I = {
-        'shape': [[1, 1, 1, 1]],
-        'color': Colours.LIGHT_BLUE
-    }
-    J = {
-        'shape': [[1, 1, 1], [0, 0, 1]],
-        'color': Colours.DARK_BLUE
-    }
-    L = {
-        'shape': [[0, 0, 1], [1, 1, 1]],
-        'color': Colours.ORANGE
-    }
-    O = {
-        'shape': [[1, 1], [1, 1]],
-        'color': Colours.YELLOW
-    }
-    S = {
-        'shape': [[0, 1, 1], [1, 1, 0]],
-        'color': Colours.GREEN
-    }
-    T = {
-        'shape': [[0, 1, 0], [1, 1, 1]],
-        'color': Colours.PURPLE
-    }
-    Z = {
-        'shape': [[0, 1, 1], [1, 1, 0]],
-        'color': Colours.RED
-    }
