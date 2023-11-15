@@ -11,7 +11,8 @@ running = True
 dt = 0
 
 tetris_game = TetrisGame(board)
-tetromino = tetris_game.generate_tetromino()
+tetrominos = [tetris_game.generate_tetromino()]
+current_tetromino = 0
 
 move_delay = 20
 move_speed = 1
@@ -20,35 +21,40 @@ delay_counter = move_delay
 font = pygame.font.Font(None, 36)
 
 while running:
+    live_t = tetrominos[current_tetromino]
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT and tetromino.can_go_left():
-                tetromino.move(-move_speed, 0)
-            elif event.key == pygame.K_RIGHT and tetromino.can_go_right(board):
-                tetromino.move(move_speed, 0)
+            if event.key == pygame.K_LEFT and live_t.can_go_left():
+                live_t.move(-move_speed, 0)
+            elif event.key == pygame.K_RIGHT and live_t.can_go_right(board):
+                live_t.move(move_speed, 0)
             elif event.key == pygame.K_UP:  # Rotate the sprite when 'R' is pressed
-                tetromino.rotate_clockwise()
+                live_t.rotate_clockwise(board)
             elif event.key == pygame.K_SPACE:  # Rotate the sprite when 'R' is pressed
-                tetromino.move(0, 100)
+                live_t.move(0, 100)
+            elif event.key == pygame.K_z:  # Rotate the sprite when 'R' is pressed
+                live_t.rotate_c_clockwise(board)
 
     delay_counter -= move_speed
     if delay_counter <= move_speed:
-        tetromino.move(0, 1)
-        if tetromino.is_at_bottom(board):
-            tetromino = tetris_game.generate_tetromino() # Wrap to the top
+        live_t.move(0, 1)
+        if live_t.is_at_bottom(board):
+            tetrominos.append(tetris_game.generate_tetromino()) # Wrap to the top
+            current_tetromino += 1
         delay_counter = move_delay
 
     # DEBUGGER
-    text = font.render(f"x:{tetromino.x} | y:{tetromino.y}", True, Colours.WHITE.value)
+    text = font.render(f"x:{live_t.x} | y:{live_t.y}", True, Colours.WHITE.value)
     text_rect = text.get_rect()
     text_rect.center = (55, 45)
 
     board.draw()
-    tetromino.draw(board.screen)
+    for t in tetrominos:
+        t.draw(board.screen)
     board.draw_grid()
     board.screen.blit(text, text_rect)
     board.update()
