@@ -3,8 +3,11 @@ from utils import Dimensions, Colours
 
 
 class Tetromino:
-    def __init__(self, shape, color, x, y):
-        self.shape = shape
+    shape_index = 0
+
+    def __init__(self, shapes, color, x, y):
+        self.shapes = shapes
+        self.shape = shapes[0]
         self.color = color
         self.x = x
         self.y = y
@@ -12,12 +15,6 @@ class Tetromino:
     def move(self, dx, dy):
         self.x += dx
         self.y += dy
-
-    def rotate(self, grid):
-        rotated_shape = [[self.shape[y][x] for y in range(len(self.shape))] for x in range(len(self.shape[0]))]
-        self.shape = rotated_shape
-        if self.out_of_bounds_right(grid):
-            self.move(-1, 0)
 
     def draw(self, surface):
         for row in range(len(self.shape)):
@@ -34,9 +31,12 @@ class Tetromino:
         return False
 
     def can_go_left(self):
-        if self.x > 0:
-            return True
-        return False
+        for row in range(len(self.shape)):
+            for col in range(len(self.shape[row])):
+                if self.shape[row][col]:
+                    if self.x + col <= 0:
+                        return False
+        return True
 
     def can_go_right(self, grid):
         for row in range(len(self.shape)):
@@ -59,63 +59,111 @@ class Tetromino:
         midpoint = board.width // 2
         return midpoint - 2, 0
 
+    def rotate_clockwise(self):
+        self.shape_index += 1
+        if self.shape_index >= len(self.shapes):
+            self.shape_index = 0
+        self.update_shape()
+
+    def update_shape(self):
+        self.shape = self.shapes[self.shape_index]
+
 
 class TTetromino(Tetromino):
+    shapes = [
+        [[0, 1, 0], [1, 1, 1], [0, 0, 0]],
+        [[0, 1, 0], [0, 1, 1], [0, 1, 0]],
+        [[0, 0, 0], [1, 1, 1], [0, 1, 0]],
+        [[0, 1, 0], [1, 1, 0], [0, 1, 0]]
+    ]
+
     def __init__(self, board):
-        shape = [[0, 1, 0], [1, 1, 1]]
         color = Colours.PURPLE.value
         x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
+        super().__init__(self.shapes, color, x, y)
 
 
 class ITetromino(Tetromino):
+    shapes = [
+        [[0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0]],
+        [[0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0], [0, 0, 1, 0]],
+        [[0, 0, 0, 0], [0, 0, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0]],
+        [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]
+    ]
+
     def __init__(self, board):
-        shape = [[1, 1, 1, 1]]
         color = Colours.LIGHT_BLUE.value
         x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
-
-
-class JTetromino(Tetromino):
-    def __init__(self, board):
-        shape = [[1, 0, 0], [1, 1, 1]]
-        color = Colours.DARK_BLUE.value
-        x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
-
-
-class LTetromino(Tetromino):
-    def __init__(self, board):
-        shape = [[0, 0, 1], [1, 1, 1]]
-        color = Colours.ORANGE.value
-        x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
-
-
-class OTetromino(Tetromino):
-    def __init__(self, board):
-        shape = [[1, 1], [1, 1]]
-        color = Colours.YELLOW.value
-        x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
+        super().__init__(self.shapes, color, x, y)
 
     @staticmethod
     def get_spawn_point(board):
         midpoint = board.width // 2
-        return midpoint - 1, 0
+        return midpoint - 2, -1
+
+
+class JTetromino(Tetromino):
+    shapes = [
+        [[1, 0, 0], [1, 1, 1], [0, 0, 0]],
+        [[0, 1, 1], [0, 1, 0], [0, 1, 0]],
+        [[0, 0, 0], [1, 1, 1], [0, 0, 1]],
+        [[0, 1, 0], [0, 1, 0], [1, 1, 0]]
+    ]
+
+    def __init__(self, board):
+        color = Colours.DARK_BLUE.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(self.shapes, color, x, y)
+
+
+class LTetromino(Tetromino):
+    shapes = [
+        [[0, 0, 1], [1, 1, 1], [0, 0, 0]],
+        [[0, 1, 0], [0, 1, 0], [0, 1, 1]],
+        [[0, 0, 0], [1, 1, 1], [1, 0, 0]],
+        [[1, 1, 0], [0, 1, 0], [0, 1, 0]]
+    ]
+
+    def __init__(self, board):
+        color = Colours.ORANGE.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(self.shapes, color, x, y)
+
+
+class OTetromino(Tetromino):
+    shapes = [
+        [[0, 1, 1, 0], [0, 1, 1, 0], [0, 0, 0, 0]],
+    ]
+
+    def __init__(self, board):
+        color = Colours.YELLOW.value
+        x, y = self.get_spawn_point(board)
+        super().__init__(self.shapes, color, x, y)
 
 
 class STetromino(Tetromino):
+    shapes = [
+        [[0, 1, 1], [1, 1, 0], [0, 0, 0]],
+        [[0, 1, 0], [0, 1, 1], [0, 0, 1]],
+        [[0, 0, 0], [0, 1, 1], [1, 1, 0]],
+        [[1, 0, 0], [1, 1, 0], [0, 1, 0]]
+    ]
+
     def __init__(self, board):
-        shape = [[0, 1, 1], [1, 1, 0]]
         color = Colours.GREEN.value
         x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
+        super().__init__(self.shapes, color, x, y)
 
 
 class ZTetromino(Tetromino):
+    shapes = [
+        [[1, 1, 0], [0, 1, 1], [0, 0, 0]],
+        [[0, 0, 1], [0, 1, 1], [0, 1, 0]],
+        [[0, 0, 0], [1, 1, 0], [0, 1, 1]],
+        [[0, 1, 0], [1, 1, 0], [1, 0, 0]]
+    ]
+
     def __init__(self, board):
-        shape = [[1, 1, 0], [0, 1, 1]]
         color = Colours.RED.value
         x, y = self.get_spawn_point(board)
-        super().__init__(shape, color, x, y)
+        super().__init__(self.shapes, color, x, y)

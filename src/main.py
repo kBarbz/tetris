@@ -31,7 +31,9 @@ while running:
             elif event.key == pygame.K_RIGHT and tetromino.can_go_right(board):
                 tetromino.move(move_speed, 0)
             elif event.key == pygame.K_UP:  # Rotate the sprite when 'R' is pressed
-                tetromino.rotate(board)
+                tetromino.rotate_clockwise()
+            elif event.key == pygame.K_SPACE:  # Rotate the sprite when 'R' is pressed
+                tetromino.move(0, 100)
 
     delay_counter -= move_speed
     if delay_counter <= move_speed:
@@ -43,7 +45,7 @@ while running:
     # DEBUGGER
     text = font.render(f"x:{tetromino.x} | y:{tetromino.y}", True, Colours.WHITE.value)
     text_rect = text.get_rect()
-    text_rect.center = (100, 100)
+    text_rect.center = (55, 45)
 
     board.draw()
     tetromino.draw(board.screen)

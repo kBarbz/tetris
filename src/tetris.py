@@ -8,4 +8,4 @@ class TetrisGame():
 
     def generate_tetromino(self):
         block_class = random.choice(block.Tetromino.__subclasses__())
-        return block.ZTetromino(self.board)
+        return block_class(self.board)
