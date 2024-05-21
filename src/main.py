@@ -15,14 +15,21 @@ tetrominos = [tetris_game.generate_tetromino()]
 current_tetromino = 0
 
 move_delay = 20
-move_speed = 1
 delay_counter = move_delay
+move_y_speed = 1
+move_x_speed = 1
+fast_speed_multiplier = 3
 collision_delay = 500  # Delay in milliseconds after collision
 collision_timer = 0  # Timer to keep track of the delay
 
 font = pygame.font.Font(None, 36)
 
+game_over = False
+
 while running:
+    if game_over:
+        break
+
     live_t = tetrominos[0]
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -31,18 +38,28 @@ while running:
             running = False
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT and live_t.can_go_left() and not tetris_game.check_for_collision(live_t.shape, live_t.x - 1, live_t.y):
-                live_t.move(-move_speed, 0)
+                live_t.move(-move_x_speed, 0)
             elif event.key == pygame.K_RIGHT and live_t.can_go_right(board) and not tetris_game.check_for_collision(live_t.shape, live_t.x + 1, live_t.y):
-                live_t.move(move_speed, 0)
+                live_t.move(move_x_speed, 0)
             elif event.key == pygame.K_UP:  # Rotate the sprite when 'R' is pressed
                 live_t.rotate_clockwise(board)
             elif event.key == pygame.K_z:  # Rotate the sprite when 'R' is pressed
                 live_t.rotate_c_clockwise(board)
+            elif event.key == pygame.K_SPACE:
+                while not live_t.is_at_bottom(board) and not tetris_game.check_for_collision(live_t.shape, live_t.x,
+                                                                                             live_t.y + 1):
+                    live_t.move(0, move_y_speed)
+                    collision_timer = 1
 
-    delay_counter -= move_speed
-    if delay_counter <= move_speed:
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_DOWN]:
+        delay_counter -= move_y_speed * fast_speed_multiplier
+    else:
+        delay_counter -= move_y_speed
+
+    if delay_counter <= move_y_speed:
         if not live_t.is_at_bottom(board) and not tetris_game.check_for_collision(live_t.shape, live_t.x, live_t.y + 1):
-            live_t.move(0, 1)
+            live_t.move(0, move_y_speed)
         if collision_timer <= 0 and (live_t.is_at_bottom(board) or tetris_game.check_for_collision(live_t.shape, live_t.x, live_t.y + 1)):
             collision_timer = pygame.time.get_ticks()  # Start collision delay timer
 
@@ -54,7 +71,11 @@ while running:
         if current_time - collision_timer >= collision_delay:
             if live_t.is_at_bottom(board) or tetris_game.check_for_collision(live_t.shape, live_t.x, live_t.y + 1):
                 tetris_game.add_to_landed(live_t)
-                tetrominos[0] = tetris_game.generate_tetromino()
+                new_tetromino = tetris_game.generate_tetromino()
+                if new_tetromino is None:
+                    game_over = True
+                else:
+                    tetrominos[0] = new_tetromino
                 collision_timer = 0  # Reset collision timer
 
     # DEBUGGER

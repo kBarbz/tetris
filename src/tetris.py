@@ -1,7 +1,7 @@
 import block
 import random
 import pygame
-from utils import Dimensions, SCORE_MULTIPLIER
+from utils import Dimensions, SCORE_MULTIPLIER, SCORE_AMOUNT_BY_ROWS
 
 class TetrisGame():
     def __init__(self, board):
@@ -11,6 +11,9 @@ class TetrisGame():
 
     def generate_tetromino(self):
         block_class = random.choice(block.Tetromino.__subclasses__())
+        new_tetromino = block_class(self.board)
+        if self.check_for_collision(new_tetromino.shape, new_tetromino.x, new_tetromino.y):
+            return None
         return block_class(self.board)
 
     def generate_grid(self):
@@ -38,7 +41,7 @@ class TetrisGame():
                 self.game_grid.insert(0, [0] * self.board.width)
 
     def update_score(self, total_cleared_rows):
-        self.score += total_cleared_rows * SCORE_MULTIPLIER
+        self.score += SCORE_AMOUNT_BY_ROWS[total_cleared_rows] * SCORE_MULTIPLIER
 
     def draw_game_grid(self):
         for row in range(len(self.game_grid)):

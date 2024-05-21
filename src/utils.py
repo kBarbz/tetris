@@ -1,6 +1,7 @@
 from enum import Enum
 
-SCORE_MULTIPLIER = 1000
+SCORE_MULTIPLIER = 100
+SCORE_AMOUNT_BY_ROWS = [0, 1, 3, 5, 8]
 
 class Dimensions(Enum):
     GRID_WIDTH = 10
