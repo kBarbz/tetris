@@ -3,18 +3,40 @@ import random
 import pygame
 from utils import Dimensions, SCORE_MULTIPLIER, SCORE_AMOUNT_BY_ROWS
 
+
 class TetrisGame():
     def __init__(self, board):
         self.board = board
         self.game_grid = self.generate_grid()
         self.score = 0
+        self.queue = []
+        self.fill_queue()
 
-    def generate_tetromino(self):
+    def add_new_tetromino_to_queue(self):
         block_class = random.choice(block.Tetromino.__subclasses__())
         new_tetromino = block_class(self.board)
-        if self.check_for_collision(new_tetromino.shape, new_tetromino.x, new_tetromino.y):
+        self.queue.append(new_tetromino)
+
+    def fill_queue(self):
+        while len(self.queue) < 3:
+            self.add_new_tetromino_to_queue()
+        self.update_queue()
+
+    def update_queue(self):
+        for i, t in enumerate(self.queue):
+            t.set_to_queue_point(self.board, i)
+
+    def get_latest_tetromino(self):
+        next_tetromino = self.queue.pop(0)
+        self.fill_queue()
+        next_tetromino.set_start_point(self.board)
+        return next_tetromino
+
+    def generate_tetromino(self):
+        next_tetromino = self.get_latest_tetromino()
+        if self.check_for_collision(next_tetromino.shape, next_tetromino.x, next_tetromino.y):
             return None
-        return block_class(self.board)
+        return next_tetromino
 
     def generate_grid(self):
         return [[0 for _ in range(self.board.width)] for _ in range(self.board.height)]

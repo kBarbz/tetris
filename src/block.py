@@ -58,9 +58,20 @@ class Tetromino:
         return True
 
     @staticmethod
-    def get_spawn_point(board):
+    def get_queue_point(board, index):
+        midpoint = (board.width // 2)
+        return midpoint + 6, index * 3 + 2
+
+    @staticmethod
+    def get_start_point(board):
         midpoint = board.width // 2
         return midpoint - 2, 0
+
+    def set_start_point(self, board):
+        self.x, self.y = self.get_start_point(board)
+
+    def set_to_queue_point(self, board, index):
+        self.x, self.y = self.get_queue_point(board, index)
 
     def rotate_clockwise(self, grid):
         self.prev_shape_index = self.shape_index
@@ -122,7 +133,7 @@ class TTetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.PURPLE.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)
 
 
@@ -136,7 +147,7 @@ class ITetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.LIGHT_BLUE.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)
 
 
@@ -150,7 +161,7 @@ class JTetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.DARK_BLUE.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)
 
 
@@ -164,7 +175,7 @@ class LTetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.ORANGE.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)
 
 
@@ -175,7 +186,7 @@ class OTetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.YELLOW.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)
 
     def update_shape(self, grid):
@@ -192,7 +203,7 @@ class STetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.GREEN.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)
 
 
@@ -206,5 +217,5 @@ class ZTetromino(Tetromino):
 
     def __init__(self, board):
         color = Colours.RED.value
-        x, y = self.get_spawn_point(board)
+        x, y = self.get_start_point(board)
         super().__init__(self.shapes, color, x, y)

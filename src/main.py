@@ -2,6 +2,7 @@ import pygame
 from tetris import TetrisGame
 from board import Board
 from utils import Colours
+from game_display import GameDisplay
 
 # pygame setup
 pygame.init()
@@ -13,6 +14,9 @@ dt = 0
 tetris_game = TetrisGame(board)
 tetrominos = [tetris_game.generate_tetromino()]
 current_tetromino = 0
+
+game_display = GameDisplay(board)
+game_display.set_queue(tetrominos)
 
 move_delay = 20
 delay_counter = move_delay
@@ -83,7 +87,10 @@ while running:
     text_rect = text.get_rect()
     text_rect.center = (55, 45)
 
+    game_display.set_score(tetris_game.score)
+    game_display.set_queue(tetris_game.queue)
     board.draw()
+    game_display.update_display()
     for t in tetrominos:
         t.draw(board.screen)
     board.draw_grid()

@@ -7,7 +7,10 @@ class Board:
         self.display = pygame.display
         self.height = Dimensions.GRID_HEIGHT.value
         self.width = Dimensions.GRID_WIDTH.value
-        self.screen = self.display.set_mode((self.width * Dimensions.CELL_SIZE.value, self.height * Dimensions.CELL_SIZE.value))
+        self.extra_width = 200  # Extra width for the game display
+        self.screen_width = self.width * Dimensions.CELL_SIZE.value + self.extra_width
+        self.screen_height = self.height * Dimensions.CELL_SIZE.value
+        self.screen = self.display.set_mode((self.screen_width, self.screen_height))
         self.color = Colours.BLACK.value
 
     def draw(self):
